@@ -40,6 +40,8 @@
    instead use snprintf to a realloc'ed buffer.
 */
 #pragma warning(disable : 4710)
+#pragma warning(disable : 4028)
+#pragma warning(disable : 4201)
 
 /*
    Disable warning about inlining functions that are not marked 'inline'.
