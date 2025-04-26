@@ -103,24 +103,7 @@ typedef uint64_t ubench_uint64_t;
 #pragma warning(pop)
 #endif
 
-#if defined(_MSC_VER)
-typedef union {
-  struct {
-    unsigned long LowPart;
-    long HighPart;
-  } DUMMYSTRUCTNAME;
-  struct {
-    unsigned long LowPart;
-    long HighPart;
-  } u;
-  ubench_int64_t QuadPart;
-} ubench_large_integer;
-
-UBENCH_C_FUNC __declspec(dllimport) int __stdcall QueryPerformanceCounter(
-    ubench_large_integer *);
-UBENCH_C_FUNC __declspec(dllimport) int __stdcall QueryPerformanceFrequency(
-    ubench_large_integer *);
-#elif defined(__linux__)
+#if defined(__linux__)
 
 /*
    slightly obscure include here - we need to include glibc's features.h, but
@@ -212,6 +195,7 @@ UBENCH_C_FUNC __declspec(dllimport) int __stdcall QueryPerformanceFrequency(
 #elif defined(_MSC_VER)
 
 #if defined(_WIN64)
+#include <windows.h>
 #define UBENCH_SYMBOL_PREFIX
 #else
 #define UBENCH_SYMBOL_PREFIX "_"
@@ -297,8 +281,8 @@ static UBENCH_INLINE ubench_int64_t ubench_mul_div(const ubench_int64_t value,
 
 static UBENCH_INLINE ubench_int64_t ubench_ns(void) {
 #if defined(_MSC_VER) || defined(__MINGW64__) || defined(__MINGW32__)
-  ubench_large_integer counter;
-  ubench_large_integer frequency;
+  LARGE_INTEGER counter;
+  LARGE_INTEGER frequency;
   QueryPerformanceCounter(&counter);
   QueryPerformanceFrequency(&frequency);
   return ubench_mul_div(counter.QuadPart, 1000000000, frequency.QuadPart);
